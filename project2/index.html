@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    Student Registration System
+    - Matches the assignment PDF: form + display + validation + localStorage
+    - Contact rule here: AT LEAST 10 digits (pattern enforces 10 or more)
+  -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Student Registration System using DOM & LocalStorage" />
+  <title>Student Registration System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ================= Header & Navigation ================= -->
+  <header class="container">
+    <nav class="navbar">
+      <div class="brand">Student Registration System</div>
+      <ul class="nav-links">
+        <!-- Quick in-page navigation to the form and records sections -->
+        <li><a href="#form">Register</a></li>
+        <li><a href="#records">Records</a></li>
+      </ul>
+    </nav>
+    <p class="subtitle">
+      Register student details (Name, Student ID, Email, Contact). Add, edit, delete records.
+      Data persists using <code>localStorage</code> even after refresh.
+    </p>
+  </header>
+
+  <!-- ================= Main Content ================= -->
+  <main class="container">
+    <!-- ========== Registration Form ========== -->
+    <!--
+      The form collects all required information.
+      We use semantic labels + input attributes for accessibility and basic HTML validation.
+      The JavaScript adds deeper validation + persistence logic.
+    -->
+    <section id="form" aria-labelledby="formTitle" class="card">
+      <h2 id="formTitle">Register / Update Student</h2>
+
+      <!--
+        novalidate: we still let attributes help (pattern, type), but rely mainly on JS
+        to present consistent messages across browsers.
+      -->
+      <form id="studentForm" novalidate>
+        <div class="grid">
+          <!-- Student Name: only letters and spaces -->
+          <div class="field">
+            <label for="studentName">Student Name<span class="req">*</span></label>
+            <input
+              id="studentName" name="studentName" type="text" placeholder="e.g., Jane Doe"
+              required minlength="2" maxlength="60"
+              pattern="^[A-Za-z ]+$"
+              aria-describedby="nameHelp" />
+            <small id="nameHelp">Only letters and spaces.</small>
+          </div>
+
+          <!-- Student ID: numeric only (length not fixed by PDF) -->
+          <div class="field">
+            <label for="studentId">Student ID<span class="req">*</span></label>
+            <input
+              id="studentId" name="studentId" type="text" placeholder="e.g., 1023"
+              required inputmode="numeric" pattern="^[0-9]+$"
+              aria-describedby="idHelp" />
+            <small id="idHelp">Numbers only.</small>
+          </div>
+
+          <!-- Email: use type=email for basic format check; JS also validates -->
+          <div class="field">
+            <label for="email">Email<span class="req">*</span></label>
+            <input
+              id="email" name="email" type="email" placeholder="e.g., name@example.com"
+              required aria-describedby="emailHelp" />
+            <small id="emailHelp">Must be a valid email address.</small>
+          </div>
+
+          <!-- Contact: AT LEAST 10 digits (no maxlength) -->
+          <div class="field">
+            <label for="contact">Contact Number<span class="req">*</span></label>
+            <!--
+              Pattern enforces at least 10 digits: ^[0-9]{10,}$
+              inputmode="numeric" gives mobile numeric keypad.
+              We DO NOT set maxlength so users can enter 11/12/etc. digits if needed.
+              JS still strips non-digits as the user types/pastes.
+            -->
+            <input
+              id="contact" name="contact" type="tel" placeholder="At least 10 digits"
+              required inputmode="numeric" pattern="^[0-9]{10,}$"
+              aria-describedby="contactHelp" />
+            <small id="contactHelp">At least 10 digits, numbers only.</small>
+          </div>
+        </div>
+
+        <!-- Form buttons (submit / reset) + live region for messages -->
+        <div class="actions">
+          <button type="submit" id="submitBtn">Add Student</button>
+          <button type="button" id="resetBtn" class="secondary">Reset</button>
+        </div>
+        <!-- aria-live helps screen readers announce validation/results -->
+        <p id="formMsg" class="sr-only" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- ========== Display Section ========== -->
+    <!--
+      Records are displayed in a table for clarity.
+      Thead is sticky for better readability on scroll.
+      Table body is populated dynamically from JS (localStorage-backed array).
+    -->
+    <section id="records" aria-labelledby="recordsTitle" class="card">
+      <h2 id="recordsTitle">Registered Students</h2>
+
+      <!--
+        The container gets a dynamic max-height via JS to produce a vertical scrollbar
+        that adapts to different viewports (mobile/tablet/desktop).
+      -->
+      <div id="tableContainer" class="table-container" role="region" aria-label="Student records list">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Student Name</th>
+              <th>Student ID</th>
+              <th>Email</th>
+              <th>Contact</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <!-- Rows are injected here by script.js -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Shown when there are zero records -->
+      <p id="emptyState" class="empty">No student records yet. Add your first student above.</p>
+    </section>
+  </main>
+
+  <!-- ================= Footer ================= -->
+  <footer class="container footer">
+    <small>&copy; <span id="year"></span> Student Registration System • Built with HTML, CSS &amp; JavaScript</small>
+  </footer>
+
+  <!-- Main application logic -->
+  <script src="script.js"></script>
+</body>
+</html>
